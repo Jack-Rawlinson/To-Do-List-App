@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>Please enter the tasks that you wish to complete:</p>
+
+<form id="frm1" action="/action_page.php">
+    Item: <input type="text" name="fname" value="Test value">
+    <br><br>
+    </form>
+    <!-- <input type= "submit"
+    onclick="myFunction()"
+    value="Submit" -->
+    <button onclick="myFunction()">Add Task</button>
+
+<p id="Demo"></p>
+
+<script>
+    function myFunction(){
+        let input = document.getElementById("frm1");
+        let input_text = "";
+        input_text += input.elements[0].value + "<br>";
+        document.getElementById("Demo").innerHTML = input_text;
+    }
+</script>
+
+</body>
+</html>
