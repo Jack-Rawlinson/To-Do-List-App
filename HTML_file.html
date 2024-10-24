@@ -8,9 +8,6 @@
     Item: <input type="text" name="fname" value="Test value">
     <br><br>
     </form>
-    <!-- <input type= "submit"
-    onclick="myFunction()"
-    value="Submit" -->
     <button onclick="myFunction()">Add Task</button>
 
 <p id="Demo"></p>
@@ -20,7 +17,18 @@
         let input = document.getElementById("frm1");
         let input_text = "";
         input_text += input.elements[0].value + "<br>";
-        document.getElementById("Demo").innerHTML = input_text;
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type="checkbox";
+        checkbox.id= "Test_checkbox";
+        checkbox.name = "Item checkbox";
+        const checkbox_item = document.createTextNode(input_text);
+
+        label.appendChild(checkbox);
+        label.appendChild(checkbox_item);
+
+        document.body.appendChild(label);
+        //document.getElementById("Demo").innerHTML = input_text;
     }
 </script>
 
