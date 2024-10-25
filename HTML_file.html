@@ -14,21 +14,56 @@
 
 <script>
     function myFunction(){
+        // Get input from frm1 object
         let input = document.getElementById("frm1");
+        // Initialize variable for storing text
         let input_text = "";
-        input_text += input.elements[0].value + "<br>";
+        // Add input value to text
+        input_text += input.elements[0].value;
+        // Create label to display checkbox + item
         const label = document.createElement("label");
+        label.id = "Label_ID"; 
+        // Create a checkbox to display next to item
         const checkbox = document.createElement("input");
         checkbox.type="checkbox";
         checkbox.id= "Test_checkbox";
         checkbox.name = "Item checkbox";
-        const checkbox_item = document.createTextNode(input_text);
-
+        checkbox.onclick = checkoff;//(this);
+        // Store input value as the text for the checkbox
+        //const checkbox_item = document.createTextNode(input_text);
+        const checkbox_item = document.createElement('span');
+        checkbox_item.textContent = input_text;
+        checkbox_item.id= "Checkbox_item";
+        // Append check box and text to label 
         label.appendChild(checkbox);
         label.appendChild(checkbox_item);
-
+        // Append label to document to display it 
         document.body.appendChild(label);
-        //document.getElementById("Demo").innerHTML = input_text;
+    }
+    function checkoff(){
+        let label = document.getElementById("Label_ID");
+        let children = label.childNodes;
+        document.getElementById("Demo").innerHTML += "Checkbox value is " + children[0].checked;
+        if (children[0].checked){
+            document.getElementById("Demo").innerHTML += "<br> Entered the IF staement";
+            let text = children[1];
+            document.getElementById("Demo").innerHTML += "<br> Got the text value : " + text.nodeValue;
+            //Breaks here
+            try{
+                document.getElementById("Demo").innerHTML += "<br> text = " + text;
+                
+                document.getElementById("Demo").innerHTML += "<br> set the child node as a variable";}
+            catch(e){
+                document.getElementById("Demo").innerHTML += "<br> Error : " + e;
+            }
+            
+            text.style.textDecoration = "line-through";//"<s> " + text.nodeValue + " </s>";
+            //text.innerHTMl = text.nodeValue;
+            document.getElementById("Demo").innerHTML = "Text value = " + text.nodeValue;
+            //document.body.appendChild(document.createTextNode(text.nodeValue));
+            //document.getElementById("Checkbox_item").nodeValue = text;
+        }
+
     }
 </script>
 
