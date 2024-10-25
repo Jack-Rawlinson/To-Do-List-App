@@ -13,57 +13,70 @@
 <p id="Demo"></p>
 
 <script>
+    let items_array = [];
+    let text_style = [];
+    // Create label to display checkbox + item
+    const label = document.createElement("label");
+    label.id = "Label_ID";
+
     function myFunction(){
         // Get input from frm1 object
         let input = document.getElementById("frm1");
-        // Initialize variable for storing text
-        let input_text = "";
-        // Add input value to text
-        input_text += input.elements[0].value;
-        // Create label to display checkbox + item
-        const label = document.createElement("label");
-        label.id = "Label_ID"; 
-        // Create a checkbox to display next to item
-        const checkbox = document.createElement("input");
-        checkbox.type="checkbox";
-        checkbox.id= "Test_checkbox";
-        checkbox.name = "Item checkbox";
-        checkbox.onclick = checkoff;//(this);
-        // Store input value as the text for the checkbox
-        //const checkbox_item = document.createTextNode(input_text);
-        const checkbox_item = document.createElement('span');
-        checkbox_item.textContent = input_text;
-        checkbox_item.id= "Checkbox_item";
-        // Append check box and text to label 
-        label.appendChild(checkbox);
-        label.appendChild(checkbox_item);
-        // Append label to document to display it 
-        document.body.appendChild(label);
+        // Push the input into items_array
+        items_array.push(input.elements[0].value);
+        text_style.push("");
+        // remove any previously displayed items when adding new ones 
+        label.replaceChildren();
+        for(item in items_array){
+            // Create a checkbox to display next to item
+            const checkbox = document.createElement("input");
+            checkbox.type="checkbox";
+            checkbox.id= "Test_checkbox";
+            checkbox.name = "Item checkbox";
+            checkbox.onclick = checkoff;
+            // When adding a new item keep old checked items as checked
+            if(text_style[item] == "line-through"){checkbox.checked = true}
+            // Store input value as the text for the checkbox
+            const checkbox_item = document.createElement('span');
+            checkbox_item.textContent = items_array[item];
+            checkbox_item.id= "Checkbox_item";
+            checkbox_item.style.textDecoration = text_style[item];
+            // Create a line break to seperate different items
+            const line_break = document.createElement('br');
+            // Append check box, text and line break to label 
+            label.appendChild(checkbox);
+            label.appendChild(checkbox_item);
+            label.appendChild(line_break);
+            // Append label to document to display it 
+            document.body.appendChild(label);
+            //document.getElementById("Demo").innerHTML = `items_array[item] == 'line-through' = ` + (items_array[item] == "line-through") + ", items_array[item] = " + items_array[item] ;
+        }
     }
     function checkoff(){
-        let label = document.getElementById("Label_ID");
+        /*
+        When the checkbox it checked this will add a strike through the associated item
+        */
+        // Get child elements from the label 
         let children = label.childNodes;
-        document.getElementById("Demo").innerHTML += "Checkbox value is " + children[0].checked;
-        if (children[0].checked){
-            document.getElementById("Demo").innerHTML += "<br> Entered the IF staement";
-            let text = children[1];
-            document.getElementById("Demo").innerHTML += "<br> Got the text value : " + text.nodeValue;
-            //Breaks here
-            try{
-                document.getElementById("Demo").innerHTML += "<br> text = " + text;
-                
-                document.getElementById("Demo").innerHTML += "<br> set the child node as a variable";}
-            catch(e){
-                document.getElementById("Demo").innerHTML += "<br> Error : " + e;
+        
+        let no_children = children.length;
+        //Check if checkbox is checked
+        for(let i=0; i<no_children-1; i++){
+            if (children[i*3].checked){
+                // Update the text style to have a line through it 
+                children[(i*3)+1].style.textDecoration = "line-through";
+                text_style[i] = "line-through";
             }
-            
-            text.style.textDecoration = "line-through";//"<s> " + text.nodeValue + " </s>";
-            //text.innerHTMl = text.nodeValue;
-            document.getElementById("Demo").innerHTML = "Text value = " + text.nodeValue;
-            //document.body.appendChild(document.createTextNode(text.nodeValue));
-            //document.getElementById("Checkbox_item").nodeValue = text;
+            if(!children[i*3].checked && children[(i*3)+1].style.textDecoration == "line-through"){
+                // Unstrike text when box is unchecked
+                children[(i*3)+1].style.textDecoration = "";
+                text_style[i] = "";
+            }
+            document.getElementById("Demo").innerHTML = "Ran thorugh the try! Length of Children = " + no_children;
+
         }
 
+        
     }
 </script>
 
