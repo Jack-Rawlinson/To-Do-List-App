@@ -5,26 +5,32 @@
 <p>Please enter the tasks that you wish to complete:</p>
 
 <form id="frm1" action="/action_page.php">
-    Item: <input type="text" name="fname" value="Test value">
+    Item: <input type="text" name="fname" >
     <br><br>
     </form>
-    <button onclick="myFunction()">Add Task</button>
+    <button onclick="additem()">Add Task</button>
 
 <p id="Demo"></p>
 
 <script>
+    // Allow storage of multiple items and keep track of their text styles (striked or not)
     let items_array = [];
     let text_style = [];
     // Create label to display checkbox + item
     const label = document.createElement("label");
     label.id = "Label_ID";
 
-    function myFunction(){
+    function additem(){
+        document.getElementById("Demo").innerHTML += " Entered Myfunction ";
         // Get input from frm1 object
         let input = document.getElementById("frm1");
         // Push the input into items_array
         items_array.push(input.elements[0].value);
         text_style.push("");
+        updatelabel();
+    }
+
+    function updatelabel(){
         // remove any previously displayed items when adding new ones 
         label.replaceChildren();
         for(item in items_array){
@@ -35,21 +41,28 @@
             checkbox.name = "Item checkbox";
             checkbox.onclick = checkoff;
             // When adding a new item keep old checked items as checked
-            if(text_style[item] == "line-through"){checkbox.checked = true}
+            if(text_style[item] == "line-through"){checkbox.checked = true;}
             // Store input value as the text for the checkbox
             const checkbox_item = document.createElement('span');
             checkbox_item.textContent = items_array[item];
             checkbox_item.id= "Checkbox_item";
             checkbox_item.style.textDecoration = text_style[item];
+            // Add a button to delete items if needed
+                
+            const delete_button = document.createElement('button');
+            delete_button.id = "Delete button - " + item;
+            delete_button.innerText = "x";
+            delete_button.onclick = delete_item;
+                
             // Create a line break to seperate different items
             const line_break = document.createElement('br');
             // Append check box, text and line break to label 
             label.appendChild(checkbox);
             label.appendChild(checkbox_item);
+            label.appendChild(delete_button);
             label.appendChild(line_break);
             // Append label to document to display it 
             document.body.appendChild(label);
-            //document.getElementById("Demo").innerHTML = `items_array[item] == 'line-through' = ` + (items_array[item] == "line-through") + ", items_array[item] = " + items_array[item] ;
         }
     }
     function checkoff(){
@@ -57,26 +70,34 @@
         When the checkbox it checked this will add a strike through the associated item
         */
         // Get child elements from the label 
+        document.getElementById("Demo").innerHTML += " Entered checkoff ";
         let children = label.childNodes;
         
         let no_children = children.length;
+        
         //Check if checkbox is checked
         for(let i=0; i<no_children-1; i++){
-            if (children[i*3].checked){
+            document.getElementById("Demo").innerHTML += " \bText style = " + children[i*4].checked;
+            if (children[i*4].checked){
                 // Update the text style to have a line through it 
-                children[(i*3)+1].style.textDecoration = "line-through";
+                children[(i*4)+1].style.textDecoration = "line-through";
                 text_style[i] = "line-through";
             }
-            if(!children[i*3].checked && children[(i*3)+1].style.textDecoration == "line-through"){
+            if(!children[i*4].checked && children[(i*4)+1].style.textDecoration == "line-through"){
                 // Unstrike text when box is unchecked
-                children[(i*3)+1].style.textDecoration = "";
+                children[(i*4)+1].style.textDecoration = "";
                 text_style[i] = "";
             }
-            document.getElementById("Demo").innerHTML = "Ran thorugh the try! Length of Children = " + no_children;
-
         }
-
-        
+    }
+    function delete_item(){
+        // Find the index of the button pressed
+        button_position = parseInt(this.id.slice(-1));
+        // Delete info on the selected item
+        text_style.splice(button_position, 1);
+        items_array.splice(button_position, 1);
+        // Update the page
+        updatelabel();
     }
 </script>
 
