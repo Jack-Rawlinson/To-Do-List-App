@@ -12,6 +12,14 @@
 
 <form id="frm1" action="/action_page.php">
 	Item: <input type="text" name="fname" >
+	<label for="Priority">Priority</label>
+
+	<select name="Priority" id="Priority_Combobox">
+		<option selected value="--none--"></option>
+		<option value="High" style="color:red">High</option>
+		<option value="Medium" style="color:rgb(255, 204, 0)">Medium</option>
+		<option value="Low" style="color:blue">Low</option>
+	</select>
 	<br><br>
 	</form>
 	<button onclick="additem()">Add Task</button>
@@ -22,6 +30,7 @@
 // Allow storage of multiple items and keep track of their text styles (striked or not)
 let items_array = [];
 let text_style = [];
+let priorities = [];
 // Create a division to display elements
 const division = document.createElement("div");
 
@@ -31,6 +40,7 @@ function additem(){
     // Push the input into items_array
     items_array.push(input.elements[0].value);
     text_style.push("");
+	priorities.push(document.getElementById("Priority_Combobox").value);
     updatelabel();
 }
 
@@ -53,6 +63,20 @@ function updatelabel(){
         checkbox_item.textContent = items_array[item];
         checkbox_item.id= "Checkbox_item";
         checkbox_item.style.textDecoration = text_style[item];
+		// Use the priority of the item to colour it 
+		switch(priorities[item]){
+			case "High":
+			  checkbox_item.style.color = "Red";
+			  break;
+			case "Medium": 
+			  checkbox_item.style.color = "rgb(255, 204, 0)";
+			  break;
+			case "Low": 
+			  checkbox_item.style.color = "Blue";
+			  break;
+			default:
+			  checkbox_item.style.color = "none";
+		}
 
         // Add a button to delete items if needed
         const delete_button = document.createElement('button');
@@ -103,8 +127,6 @@ function delete_item(){
     // Update the page
     updatelabel();
 }
-
-
 </script>
 
 </body>
