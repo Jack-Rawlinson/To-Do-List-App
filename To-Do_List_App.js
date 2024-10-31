@@ -1,15 +1,27 @@
 // Allow storage of multiple items and keep track of their text styles (striked or not)
 let items_array = [];
 let text_style = [];
+let priorities = [];
 // Create a division to display elements
 const division = document.createElement("div");
+
+// Check local storage to recover any previous items
+if(localStorage.getItem("items") != null && localStorage.getItem("styles") != null && localStorage.getItem("priorities") != null){
+    // Store remembered data in arrays, rememberinjg to split by , 
+    items_array = localStorage.getItem("items").split(",");
+    text_style = localStorage.getItem("styles").split(",");
+    priorities = localStorage.getItem("priorities").split(","); 
+}
+// Show remebered values
+updatelabel();
 
 function additem(){
     // Get input from frm1 object
     let input = document.getElementById("frm1");
     // Push the input into items_array
     items_array.push(input.elements[0].value);
-    text_style.push("");
+    text_style.push("none");
+	priorities.push(document.getElementById("Priority_Combobox").value);
     updatelabel();
 }
 
@@ -32,6 +44,20 @@ function updatelabel(){
         checkbox_item.textContent = items_array[item];
         checkbox_item.id= "Checkbox_item";
         checkbox_item.style.textDecoration = text_style[item];
+		// Use the priority of the item to colour it 
+		switch(priorities[item]){
+			case "High":
+			  checkbox_item.style.color = "Red";
+			  break;
+			case "Medium": 
+			  checkbox_item.style.color = "rgb(255, 204, 0)";
+			  break;
+			case "Low": 
+			  checkbox_item.style.color = "Blue";
+			  break;
+			default:
+			  checkbox_item.style.color = "none";
+		}
 
         // Add a button to delete items if needed
         const delete_button = document.createElement('button');
@@ -49,12 +75,23 @@ function updatelabel(){
         // Append Div to document to display it 
         document.body.appendChild(division);
     }
+    // Update local storage
+    localStorage.setItem("items", items_array);
+    localStorage.setItem("styles", text_style);
+    localStorage.setItem("priorities", priorities);
+}
+
+function delete_memory(){
+    // Reset button on memory mostly used for testig purposes
+    localStorage.removeItem("items");
+    localStorage.removeItem("styles");
+    localStorage.removeItem("priorities");
 }
 function checkoff(){
     /*
     When the checkbox it checked this will add a strike through the associated item
     */
-    // Get child elements from the Div 
+    // Get child elements from the Div
     let children = division.childNodes;
     
     let no_children = children.length;
@@ -73,12 +110,41 @@ function checkoff(){
         }
     }
 }
+
 function delete_item(){
     // Find the index of the button pressed
     button_position = parseInt(this.id.slice(-1));
     // Delete info on the selected item
     text_style.splice(button_position, 1);
     items_array.splice(button_position, 1);
+    priorities.splice(button_position,1);
     // Update the page
     updatelabel();
+}
+
+function download_csv(){
+    document.getElementById("Demo").innerHTML += "using require functions ";
+	const fs = require('fs');
+    const path = require('path');
+    document.getElementById("Demo").innerHTML += "declared fs and path ";
+
+    // Define the hardcoded file path
+    const filePath = path.join(__dirname, 'To-Do_Items.csv'); // Adjust the filename as needed
+
+    // Read the CSV file
+    fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+        
+        document.getElementById("Demo").innerHTML += "Error reading file: "+ err;
+        return;
+    }
+    
+    // Split the file contents into lines
+    let lines = data.split('\n');
+    for (let line of lines) {
+        let values = line.split(',');
+        // Do something with each value
+        document.getElementById("Demo").innerHTML += values;
+    }
+    });
 }
