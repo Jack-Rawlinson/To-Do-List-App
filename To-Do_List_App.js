@@ -76,9 +76,12 @@ function updatelabel(){
             // Show number of days left
             days_left_element.textContent = " Due in " + days_left + " Day(s)";
             // Today looks nicer than 0 day(s)
-            if(days_left == 0){days_left_element.textContent = "Due Today"}
+            if(days_left == 0){days_left_element.textContent = " Due Today"}
             // Make it clear when task is over due
-            if(days_left < 0){days_left_element.style.color = "red"}
+            if(days_left < 0){
+                days_left_element.style.color = "red";
+                days_left_element.textContent = " OVERDUE " + days_left_element.textContent; 
+            }
         }
         // Add a button to delete items if needed
         const delete_button = document.createElement('button');
