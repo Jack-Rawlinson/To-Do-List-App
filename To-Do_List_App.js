@@ -19,12 +19,17 @@ updatelabel();
 function additem(){
     // Get input from frm1 object
     let input = document.getElementById("frm1");
-    // Push the input into items_array
-    items_array.push(input.elements[0].value);
-    text_style.push("none");
-	priorities.push(document.getElementById("Priority_Combobox").value);
-    dates.push(input.elements[1].value);
-    updatelabel();
+    if(!input.elements[1].value){
+        alert("Please enter a date");
+    }
+    else{
+        // Push the input into items_array
+        items_array.push(input.elements[0].value);
+        text_style.push("none");
+        priorities.push(document.getElementById("Priority_Combobox").value);
+        dates.push(input.elements[1].value);
+        updatelabel();
+    }
 }
 
 function updatelabel(){
