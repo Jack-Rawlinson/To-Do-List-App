@@ -12,11 +12,11 @@
 
 <form id="frm1" autocomplete="on">
 	Item: <input type="text" name="fname" >
-    Complete within (Days): <input type="date" name="date" >
+    Complete within (Days): <input type="date" name="date">
 	<label for="Priority">Priority</label>
 
 	<select name="Priority" id="Priority_Combobox">
-		<option selected value="--none--"></option>
+		<option selected value="--none--">None</option>
 		<option value="High" style="color:red">High</option>
 		<option value="Medium" style="color:rgb(255, 204, 0)">Medium</option>
 		<option value="Low" style="color:blue">Low</option>
@@ -25,6 +25,12 @@
 	</form>
 	<button onclick="additem()">Add Task</button>
     <button onclick="delete_memory()">Reset Memory</button>
+
+    <label for="Sort">Sort by</label>
+    <select name="Sort" id="Sort_Combobox" onchange="updatelabel()">
+        <option selected value="Priority">Priority</option>
+        <option value="Date">Date</option>
+    </select>
 
 <p id="Demo"></p>
 

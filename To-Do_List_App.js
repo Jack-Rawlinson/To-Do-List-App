@@ -1,4 +1,5 @@
 // Allow storage of multiple items and keep track of their text styles (striked or not)
+let item_data = [];
 let items_array = [];
 let text_style = [];
 let priorities = [];
@@ -12,6 +13,9 @@ if(localStorage.getItem("items") != null && localStorage.getItem("styles") != nu
     text_style = localStorage.getItem("styles").split(",");
     priorities = localStorage.getItem("priorities").split(",");
     dates = localStorage.getItem("dates").split(",");
+    for(i in items_array){
+        item_data.push([items_array[i], text_style[i], priorities[i], dates[i]]);
+    }
 }
 // Show remebered values
 updatelabel();
@@ -28,11 +32,18 @@ function additem(){
         text_style.push("none");
         priorities.push(document.getElementById("Priority_Combobox").value);
         dates.push(input.elements[1].value);
+        let final_index = items_array.length - 1;
+        item_data.push([items_array[final_index], text_style[final_index], priorities[final_index], dates[final_index]]);
         updatelabel();
     }
 }
 
 function updatelabel(){
+    // Sort items by relevent filter
+    const sort_type = document.getElementById("Sort_Combobox").value;
+    if(sort_type == "Priority"){item_data.sort(priority_sort)}
+    if(sort_type == "Date"){item_data.sort(date_sort)}
+
     // Clear any active elements within the division
     division.replaceChildren();
     for(item in items_array){
@@ -44,15 +55,15 @@ function updatelabel(){
         checkbox.onclick = checkoff;
 
         // When adding a new item keep old checked items as checked
-        if(text_style[item] == "line-through"){checkbox.checked = true;}
+        if(item_data[item][1] == "line-through"){checkbox.checked = true;}
 
         // Store input value as the text for the checkbox
         const checkbox_item = document.createElement('label');
-        checkbox_item.textContent = items_array[item];
+        checkbox_item.textContent = item_data[item][0];
         checkbox_item.id= "Checkbox_item";
-        checkbox_item.style.textDecoration = text_style[item];
+        checkbox_item.style.textDecoration = item_data[item][1];
 		// Use the priority of the item to colour it 
-		switch(priorities[item]){
+		switch(item_data[item][2]){
 			case "High":
 			  checkbox_item.style.color = "Red";
 			  break;
@@ -70,7 +81,7 @@ function updatelabel(){
         if(dates.length > 0){
             // Create date element with value for the current day
             let today = new Date();
-            let finish_date = Date.parse(dates[item]);
+            let finish_date = Date.parse(item_data[item][3]);
             // Calculate the difference in days between dates
             let days_left = Math.ceil((finish_date - today.getTime()) / (1000*3600*24));
             // Show number of days left
@@ -155,4 +166,52 @@ function delete_item(){
     dates.splice(button_position,1);
     // Update the page
     updatelabel();
+}
+
+function priority_sort(item_1, item_2){
+    /*
+    Function used in for .sort(), returns postive value if prioirty of item 2 is higher or -1 if it is lower.
+    If priorities are the same then returns difference between date values to sort by date and priority
+    */ 
+    switch (item_1[2]){
+        case "Low":
+            return item_2[2] == "Low"? (Date.parse(item_1[3]) - Date.parse(item_2[3])) : 1
+        case "Medium":
+            switch (item_2[2]){
+                case "Low":
+                    return -1
+                case "High":
+                    return 1 
+                default: 
+                    return (Date.parse(item_1[3]) - Date.parse(item_2[3]))
+            }
+        case "High":
+            return item_2[2] == "High"? (Date.parse(item_1[3]) - Date.parse(item_2[3])) :-1
+    }
+}
+function date_sort(item_1, item_2){
+    /*
+    Function used in for .sort(), returns differnce between due dates of items.
+    If due dates are the same then returns difference between prioirties.
+    */ 
+
+    if(Date.parse(item_1[3]) - Date.parse(item_2[3]) == 0 ){
+        switch (item_1[2]){
+            case "Low":
+                return item_2[2] == "Low"? 0 : 1
+            case "Medium":
+                switch (item_2[2]){
+                    case "Low":
+                        return -1
+                    case "High":
+                        return 1 
+                    default: 
+                        return 0
+                }
+            case "High":
+                return item_2[2] == "High"? 0 :-1
+        }
+    }
+    
+    return (Date.parse(item_1[3]) - Date.parse(item_2[3]))
 }
