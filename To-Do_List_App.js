@@ -92,9 +92,9 @@ function updatelabel(){
         // Calculate the difference in days between dates
         let days_left = Math.ceil((finish_date - today.getTime()) / (1000*3600*24));
         // Show number of days left
-        days_left_element.textContent = " Due in " + days_left + " Day(s)";
+        days_left_element.textContent = " Due in " + days_left + " Day(s) ";
         // Today looks nicer than 0 day(s)
-        if(days_left == 0){days_left_element.textContent = " Due Today"}
+        if(days_left == 0){days_left_element.textContent = " Due Today "}
         // Make it clear when task is over due
         if(days_left < 0){
             days_left_element.style.color = "red";
@@ -126,6 +126,9 @@ function updatelabel(){
     if(item_data.length>0){
         update_memory();
     }
+}
+function dark_mode(){
+    document.body.classList.toggle("dark_mode");
 }
 
 function edit_item(){
