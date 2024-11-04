@@ -1,24 +1,30 @@
-// Allow storage of multiple items and keep track of their text styles (striked or not)
-let item_data = [];
-let items_array = [];
-let text_style = [];
-let priorities = [];
-let dates = [];
-// Create a division to display elements
-const division = document.createElement("div");
-// Check local storage to recover any previous items
-if(localStorage.getItem("items") != null && localStorage.getItem("styles") != null && localStorage.getItem("priorities") != null && localStorage.getItem("dates") != null){
-    // Store remembered data in arrays, rememberinjg to split by , 
-    items_array = localStorage.getItem("items").split(",");
-    text_style = localStorage.getItem("styles").split(",");
-    priorities = localStorage.getItem("priorities").split(",");
-    dates = localStorage.getItem("dates").split(",");
-    for(i in items_array){
-        item_data.push([items_array[i], text_style[i], priorities[i], dates[i]]);
+if(__name__ = "__main__"){
+    // Assign add item function to enter button on the form ton allow for better UX
+    const form = document.getElementById("frm1");
+    form.addEventListener("keypress", (event) => {
+        if(event.key === "Enter"){
+            event.preventDefault();
+            additem();
+        }
+    })
+    // Set initial date as todays date
+    document.getElementById("frm1").elements[1].valueAsDate = new Date();
+    
+    // Allow storage of multiple items
+    let item_data = [];
+    // Create a division to display elements
+    const division = document.createElement("div");
+    // Check local storage to recover any previous items
+    if(localStorage.getItem("item_data") != null){
+        // Store remembered data in item_data, rememberinjg to split by , 
+        const test_data_store = localStorage.getItem("item_data").split(",");
+        for(let i=0; i<(test_data_store.length/4); i++){
+            item_data.push([test_data_store[i*4], test_data_store[(i*4) + 1], test_data_store[(i*4) + 2], test_data_store[(i*4) + 3]]);
+        }
     }
+    // Show remebered values
+    updatelabel();
 }
-// Show remebered values
-updatelabel();
 
 function additem(){
     // Get input from frm1 object
@@ -28,13 +34,15 @@ function additem(){
     }
     else{
         // Push the input into items_array
-        items_array.push(input.elements[0].value);
-        text_style.push("none");
-        priorities.push(document.getElementById("Priority_Combobox").value);
-        dates.push(input.elements[1].value);
-        let final_index = items_array.length - 1;
-        item_data.push([items_array[final_index], text_style[final_index], priorities[final_index], dates[final_index]]);
+        const item = input.elements[0].value;
+        const style = "none";
+        const priority = document.getElementById("Priority_Combobox").value;
+        const date = input.elements[1].value;
+        item_data.push([item, style, priority, date]);
         updatelabel();
+        input.elements[0].value = "";
+        document.getElementById("Priority_Combobox").value = "None";
+
     }
 }
 
@@ -46,7 +54,7 @@ function updatelabel(){
 
     // Clear any active elements within the division
     division.replaceChildren();
-    for(item in items_array){
+    for(item in item_data){
         // Create a checkbox to display next to item
         const checkbox = document.createElement("input");
         checkbox.type="checkbox";
@@ -78,21 +86,19 @@ function updatelabel(){
 		}
         // Initialize days_left to avoid error when appending to div 
         const days_left_element = document.createElement("label");
-        if(dates.length > 0){
-            // Create date element with value for the current day
-            let today = new Date();
-            let finish_date = Date.parse(item_data[item][3]);
-            // Calculate the difference in days between dates
-            let days_left = Math.ceil((finish_date - today.getTime()) / (1000*3600*24));
-            // Show number of days left
-            days_left_element.textContent = " Due in " + days_left + " Day(s)";
-            // Today looks nicer than 0 day(s)
-            if(days_left == 0){days_left_element.textContent = " Due Today"}
-            // Make it clear when task is over due
-            if(days_left < 0){
-                days_left_element.style.color = "red";
-                days_left_element.textContent = " OVERDUE " + days_left_element.textContent; 
-            }
+        // Create date element with value for the current day
+        let today = new Date();
+        let finish_date = Date.parse(item_data[item][3]);
+        // Calculate the difference in days between dates
+        let days_left = Math.ceil((finish_date - today.getTime()) / (1000*3600*24));
+        // Show number of days left
+        days_left_element.textContent = " Due in " + days_left + " Day(s)";
+        // Today looks nicer than 0 day(s)
+        if(days_left == 0){days_left_element.textContent = " Due Today"}
+        // Make it clear when task is over due
+        if(days_left < 0){
+            days_left_element.style.color = "red";
+            days_left_element.textContent = " OVERDUE " + days_left_element.textContent; 
         }
         // Add a button to delete items if needed
         const delete_button = document.createElement('button');
@@ -111,24 +117,19 @@ function updatelabel(){
         // Append Div to document to display it 
         document.body.appendChild(division);
     }
-    if(items_array.length>0){
+    if(item_data.length>0){
         update_memory();
     }
 }
 
 function update_memory(){
     // Update local storage
-    localStorage.setItem("items", items_array);
-    localStorage.setItem("styles", text_style);
-    localStorage.setItem("priorities", priorities);
-    localStorage.setItem("dates", dates);
+    localStorage.setItem("item_data", item_data);
 }
 function delete_memory(){
     // Reset button on memory mostly used for testig purposes
-    localStorage.removeItem("items");
-    localStorage.removeItem("styles");
-    localStorage.removeItem("priorities");
-    localStorage.removeItem("dates");
+    localStorage.removeItem("item_data");
+    updatelabel();
 }
 
 function checkoff(){
@@ -145,12 +146,12 @@ function checkoff(){
         if (children[i*5].checked){
             // Update the text style to have a line through it 
             children[(i*5)+1].style.textDecoration = "line-through";
-            text_style[i] = "line-through";
+            item_data[i][1] = "line-through";
         }
         if(!children[i*5].checked && children[(i*5)+1].style.textDecoration == "line-through"){
             // Unstrike text when box is unchecked
             children[(i*5)+1].style.textDecoration = "none";
-            text_style[i] = "none";
+            item_data[i][1] = "none";
         }
     }
     update_memory();
@@ -160,10 +161,7 @@ function delete_item(){
     // Find the index of the button pressed
     button_position = parseInt(this.id.slice(-1));
     // Delete info on the selected item
-    text_style.splice(button_position, 1);
-    items_array.splice(button_position, 1);
-    priorities.splice(button_position,1);
-    dates.splice(button_position,1);
+    item_data.splice(button_position,1);
     // Update the page
     updatelabel();
 }
