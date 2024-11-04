@@ -1,3 +1,9 @@
+// Allow storage of multiple items
+let item_data = [];
+// Create a division to display elements
+const division = document.createElement("div");
+// Variable to keep track of how many elements are used per item
+const number_of_elements = 6;
 if(__name__ = "__main__"){
     // Assign add item function to enter button on the form ton allow for better UX
     const form = document.getElementById("frm1");
@@ -9,11 +15,6 @@ if(__name__ = "__main__"){
     })
     // Set initial date as todays date
     document.getElementById("frm1").elements[1].valueAsDate = new Date();
-    
-    // Allow storage of multiple items
-    let item_data = [];
-    // Create a division to display elements
-    const division = document.createElement("div");
     // Check local storage to recover any previous items
     if(localStorage.getItem("item_data") != null){
         // Store remembered data in item_data, rememberinjg to split by , 
@@ -51,7 +52,6 @@ function updatelabel(){
     const sort_type = document.getElementById("Sort_Combobox").value;
     if(sort_type == "Priority"){item_data.sort(priority_sort)}
     if(sort_type == "Date"){item_data.sort(date_sort)}
-
     // Clear any active elements within the division
     division.replaceChildren();
     for(item in item_data){
@@ -100,6 +100,11 @@ function updatelabel(){
             days_left_element.style.color = "red";
             days_left_element.textContent = " OVERDUE " + days_left_element.textContent; 
         }
+        //Add a button to edit items if needed
+        const edit_button = document.createElement('button');
+        edit_button.id = "Edit button - " + item;
+        edit_button.innerText = "Edit";
+        edit_button.onclick = edit_item;
         // Add a button to delete items if needed
         const delete_button = document.createElement('button');
         delete_button.id = "Delete button - " + item;
@@ -112,6 +117,7 @@ function updatelabel(){
         division.appendChild(checkbox);
         division.appendChild(checkbox_item);
         division.appendChild(days_left_element);
+        division.appendChild(edit_button);
         division.appendChild(delete_button);
         division.appendChild(line_break);
         // Append Div to document to display it 
@@ -122,6 +128,82 @@ function updatelabel(){
     }
 }
 
+function edit_item(){
+    /*
+    Function to allow user to change an item that has already been added
+    */
+    
+    // Find the index of the button pressed
+    let button_position = parseInt(this.id.slice(-1));
+    // Get all elements in the div 
+    let children = division.children;
+    // Create elements to change values of Item 
+    const line_break = document.createElement("br");
+    const priority_element = document.createElement("select");
+    // Label element to allow other functions to get changed values  
+    priority_element.id = "priority - " + button_position;
+    // Set values and colors of priority options
+    let values = ["None", "High", "Medium", "Low"];
+    let colours = ["black", "red", "rgb(255, 204, 0)" ,"blue"];
+    for(value in values){
+        const option = document.createElement("option");
+        option.value = values[value];
+        option.text = values[value];
+        option.style.color= colours[value];
+        priority_element.appendChild(option);
+    }
+    // Ensure priority box has correct initial value
+    let selected_index = values.indexOf(item_data[button_position][2])
+    priority_element.options[selected_index].selected = true;
+    // Date input
+    const date_input = document.createElement("input");
+    date_input.id = "date - " + button_position;
+    date_input.type = "date";
+    date_input.value  = item_data[button_position][3];
+    // Text input
+    const text_input = document.createElement("input");
+    text_input.id = "text - " + button_position
+    text_input.type = "text";
+    text_input.value = item_data[button_position][0];
+    // Buttons to confirm or reject changes
+    const check_button = document.createElement("button");
+    check_button.id = "check - " + button_position;
+    check_button.innerText = "\u2713";
+    check_button.onclick = save_change;
+
+    const stop_button = document.createElement("button");
+    stop_button.innerText = "X"
+    stop_button.onclick = updatelabel; 
+    // Remove the elements initially showing item info
+    for(let i=0; i<number_of_elements; i++){
+            division.removeChild(children[button_position*number_of_elements]);
+    }
+    // Insert editable elemtents in same place as item that was selected
+    division.insertBefore(line_break, children[button_position*number_of_elements]);
+    division.insertBefore(stop_button, children[button_position*number_of_elements]);
+    division.insertBefore(check_button, children[button_position*number_of_elements]);
+    division.insertBefore(priority_element, children[button_position*number_of_elements]);
+    division.insertBefore(date_input, children[button_position*number_of_elements]);
+    division.insertBefore(text_input, children[button_position*number_of_elements]);
+}
+
+function save_change(){
+    /*
+     Called by check button in edit item function to save changes
+    */
+    //Find the index of the button pressed
+   let index = parseInt(this.id.slice(-1));
+   // Get updated data
+   let item = document.getElementById("text - " + index).value;
+   let date = document.getElementById("date - " + index).value;
+   let priority = document.getElementById("priority - " + index).value;
+   // Update item_data array
+   item_data[index*number_of_elements][0] = item;
+   item_data[index*number_of_elements][2] = priority;
+   item_data[index*number_of_elements][3] = date;
+   // Update display
+   updatelabel();
+}
 function update_memory(){
     // Update local storage
     localStorage.setItem("item_data", item_data);
@@ -171,7 +253,7 @@ function priority_sort(item_1, item_2){
     Function used in for .sort(), returns postive value if prioirty of item 2 is higher or -1 if it is lower.
     If priorities are the same then returns difference between date values to sort by date and priority
     */ 
-    switch (item_1[2]){
+   switch (item_1[2]){
         case "Low":
             return item_2[2] == "Low"? (Date.parse(item_1[3]) - Date.parse(item_2[3])) : 1
         case "Medium":
