@@ -29,6 +29,7 @@ if(__name__ = "__main__"){
 
 function additem(){
     // Get input from frm1 object
+    alert("Getting form");
     let input = document.getElementById("frm1");
     if(!input.elements[1].value){
         alert("Please enter a date");
@@ -36,6 +37,7 @@ function additem(){
     else{
         // Push the input into items_array
         const item = input.elements[0].value;
+        
         const style = "none";
         const priority = document.getElementById("Priority_Combobox").value;
         const date = input.elements[1].value;
@@ -43,7 +45,6 @@ function additem(){
         updatelabel();
         input.elements[0].value = "";
         document.getElementById("Priority_Combobox").value = "None";
-
     }
 }
 
@@ -131,6 +132,11 @@ function dark_mode(){
     document.body.classList.toggle("dark_mode");
 }
 
+function successful_login(){
+    document.getElementById("to-do div").style.display = "initial";
+    document.getElementById("login").style.display = "none";
+}
+
 function edit_item(){
     /*
     Function to allow user to change an item that has already been added
@@ -212,7 +218,7 @@ function update_memory(){
     localStorage.setItem("item_data", item_data);
 }
 function delete_memory(){
-    // Reset button on memory mostly used for testig purposes
+    // Reset button on memory mostly used for testing purposes
     localStorage.removeItem("item_data");
     item_data = [];
     updatelabel();
@@ -228,15 +234,15 @@ function checkoff(){
     let no_children = children.length;
 
     //Check if checkbox is checked
-    for(let i=0; i<(no_children/5); i++){
-        if (children[i*5].checked){
+    for(let i=0; i<(no_children/number_of_elements); i++){
+        if (children[i*number_of_elements].checked){
             // Update the text style to have a line through it 
-            children[(i*5)+1].style.textDecoration = "line-through";
+            children[(i*number_of_elements)+1].style.textDecoration = "line-through";
             item_data[i][1] = "line-through";
         }
-        if(!children[i*5].checked && children[(i*5)+1].style.textDecoration == "line-through"){
+        if(!children[i*number_of_elements].checked && children[(i*number_of_elements)+1].style.textDecoration == "line-through"){
             // Unstrike text when box is unchecked
-            children[(i*5)+1].style.textDecoration = "none";
+            children[(i*number_of_elements)+1].style.textDecoration = "none";
             item_data[i][1] = "none";
         }
     }
@@ -259,7 +265,7 @@ function priority_sort(item_1, item_2){
     Function used in for .sort(), returns postive value if prioirty of item 2 is higher or -1 if it is lower.
     If priorities are the same then returns difference between date values to sort by date and priority
     */ 
-   switch (item_1[2]){
+    switch (item_1[2]){
         case "Low":
             return item_2[2] == "Low"? (Date.parse(item_1[3]) - Date.parse(item_2[3])) : 1
         case "Medium":
@@ -298,6 +304,5 @@ function date_sort(item_1, item_2){
                 return item_2[2] == "High"? 0 :-1
         }
     }
-    
     return (Date.parse(item_1[3]) - Date.parse(item_2[3]))
 }
