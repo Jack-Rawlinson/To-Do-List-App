@@ -214,6 +214,7 @@ function update_memory(){
 function delete_memory(){
     // Reset button on memory mostly used for testig purposes
     localStorage.removeItem("item_data");
+    item_data = [];
     updatelabel();
 }
 
@@ -247,6 +248,8 @@ function delete_item(){
     button_position = parseInt(this.id.slice(-1));
     // Delete info on the selected item
     item_data.splice(button_position,1);
+    // Delete local memory of array if empty 
+    if(item_data.length == 0){delete_memory()}
     // Update the page
     updatelabel();
 }
