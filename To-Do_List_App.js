@@ -1,7 +1,10 @@
 // Allow storage of multiple items
 let item_data = [];
+let user_data = [];
+let user_index;
 // Create a division to display elements
 const division = document.createElement("div");
+division.style.display = "none";
 // Variable to keep track of how many elements are used per item
 const number_of_elements = 6;
 if(__name__ = "__main__"){
@@ -12,15 +15,20 @@ if(__name__ = "__main__"){
             event.preventDefault();
             additem();
         }
-    })
+    });
+    document.getElementById("login div").addEventListener("keypress", (event) => {
+        if(event.key === "Enter"){
+            event.preventDefault();
+            successful_login();
+        }
+    });
     // Set initial date as todays date
     document.getElementById("frm1").elements[1].valueAsDate = new Date();
-    // Check local storage to recover any previous items
-    if(localStorage.getItem("item_data") != null){
-        // Store remembered data in item_data, rememberinjg to split by , 
-        const test_data_store = localStorage.getItem("item_data").split(",");
-        for(let i=0; i<(test_data_store.length/4); i++){
-            item_data.push([test_data_store[i*4], test_data_store[(i*4) + 1], test_data_store[(i*4) + 2], test_data_store[(i*4) + 3]]);
+    // Get user data (Username and password)
+    if(localStorage.getItem("user_data") != null){
+        const temp_user_storage = localStorage.getItem("user_data").split(",");
+        for(let i=0;i<(temp_user_storage.length/2);i++){
+            user_data.push([temp_user_storage[i*2], temp_user_storage[(i*2)+1]]);
         }
     }
     // Show remebered values
@@ -29,7 +37,6 @@ if(__name__ = "__main__"){
 
 function additem(){
     // Get input from frm1 object
-    alert("Getting form");
     let input = document.getElementById("frm1");
     if(!input.elements[1].value){
         alert("Please enter a date");
@@ -132,9 +139,79 @@ function dark_mode(){
     document.body.classList.toggle("dark_mode");
 }
 
+function register(){
+    // Allow new user data to be registered
+    // Get children of the div
+    const children = document.getElementById("register div").children;
+    // Check username against pre-existing users
+    for(user in user_data){
+        if(children[1].value == user_data[user*2]){
+            alert("Username already exists");
+            return
+        }
+    }
+    // Validate that a value has been entered into password field
+    if(children[3].value.length == 0 ){
+        alert("Please enter a password");
+        return
+    }
+    // Confirm that passwrd is a reasonable length
+    if(children[3].value.length < 8){
+        alert("Password must be at least 8 characters long");
+        return
+    }
+    // Check that passwords match
+    if(children[3].value != children[5].value){
+        alert("Passwords do not match");
+        return
+    }
+    // Save data in user_data array and note the index of the new user
+    user_data.push([children[1].value, children[3].value]);
+    user_index = user_data.length - 1;
+    // Save new user details to local storage
+    //alert("user_data: "+user_data + "children values: "+children[1].value +" "+children[3].value);
+    localStorage.setItem("user_data", user_data);
+    // Log in to app
+    successful_login();
+}
+function validate_login(){
+    // Get login elements 
+    const login_children = document.getElementById("login div").children;
+    // Assume user does not exist
+    let exists = false;
+    // Confirm that username exists in database
+    for(let i=0; i<(user_data.length/2);i++){
+        if(login_children[1].value == user_data[i*2][0]){
+            exists = true;
+            user_index = i*2;
+        }
+    }
+    // Show error if user doesn't exist
+    if(!exists){
+        alert("Username does not exist");
+        return
+    }
+    // Validate the entered password
+    if(login_children[3].value != user_data[user_index][1]){
+        alert("Incorrect password");
+        return
+    }
+    successful_login();
+}
 function successful_login(){
+    // Reveal desired elements
     document.getElementById("to-do div").style.display = "initial";
-    document.getElementById("login").style.display = "none";
+    division.style.display = "initial";
+    // Hide log in elements
+    document.getElementById("verification div").style.display = "none";
+    // Check local storage to recover any previous items
+    if(localStorage.getItem("item_data - " + user_data[user_index]) != null){
+        // Store remembered data in item_data, rememberinjg to split by , 
+        const test_data_store = localStorage.getItem("item_data - " + user_data[user_index]).split(",");
+        for(let i=0; i<(test_data_store.length/4); i++){
+            item_data.push([test_data_store[i*4], test_data_store[(i*4) + 1], test_data_store[(i*4) + 2], test_data_store[(i*4) + 3]]);
+        }
+    }
 }
 
 function edit_item(){
@@ -215,11 +292,11 @@ function save_change(){
 }
 function update_memory(){
     // Update local storage
-    localStorage.setItem("item_data", item_data);
+    localStorage.setItem("item_data - " + user_data[user_index], item_data);
 }
 function delete_memory(){
     // Reset button on memory mostly used for testing purposes
-    localStorage.removeItem("item_data");
+    localStorage.removeItem("item_data - " + user_data[user_index]);
     item_data = [];
     updatelabel();
 }

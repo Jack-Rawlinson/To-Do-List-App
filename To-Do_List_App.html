@@ -14,7 +14,21 @@
 	</head>
 <body>
 
-<button id="login" onclick="successful_login()">Login</button>
+<div id="verification div">  
+    <div id="login div" style="float:left">
+        <h2>Login</h2>
+        Username: <input type="text"><br>
+        Password: <input type="password"><br>
+        <button id="login" onclick="validate_login()">Login</button>
+    </div>
+    <div id="register div" style="float:right">
+        <h2>Register</h2>
+        Username: <input type="text"><br>
+        Password: <input type="password"><br>
+        Repeat Password: <input type="password"><br>
+        <button id="register" onclick="register()">Register</button>
+    </div>
+</div>
 <div id ="to-do div" style="display:none">
     <p>Please enter the tasks that you wish to complete:</p>
 
@@ -41,8 +55,8 @@
             <option value="Date">Date</option>
         </select>
 
-    <p id="Demo"></p>
 </div>
+<p id="Demo"></p>
 <script src='To-Do_List_App.js'></script>
 
 </body>
