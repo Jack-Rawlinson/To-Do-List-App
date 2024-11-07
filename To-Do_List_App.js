@@ -8,20 +8,10 @@ division.style.display = "none";
 // Variable to keep track of how many elements are used per item
 const number_of_elements = 6;
 if(__name__ = "__main__"){
-    // Assign add item function to enter button on the form ton allow for better UX
-    const form = document.getElementById("frm1");
-    form.addEventListener("keypress", (event) => {
-        if(event.key === "Enter"){
-            event.preventDefault();
-            additem();
-        }
-    });
-    document.getElementById("login div").addEventListener("keypress", (event) => {
-        if(event.key === "Enter"){
-            event.preventDefault();
-            successful_login();
-        }
-    });
+    // reAssign enter button actions for better UX
+    reassign_enter("frm1", additem);
+    reassign_enter("login div", validate_login);
+    reassign_enter("register div", register);
     // Set initial date as todays date
     document.getElementById("frm1").elements[1].valueAsDate = new Date();
     // Get user data (Username and password)
@@ -35,6 +25,15 @@ if(__name__ = "__main__"){
     updatelabel();
 }
 
+function reassign_enter(element, new_function){
+    document.getElementById(element).addEventListener("keypress", (event) => {
+        if(event.key === "Enter"){
+            event.preventDefault();
+            new_function();
+        }
+    });
+}
+
 function additem(){
     // Get input from frm1 object
     let input = document.getElementById("frm1");
@@ -42,14 +41,16 @@ function additem(){
         alert("Please enter a date");
     }
     else{
-        // Push the input into items_array
+        // Get values for item_data array from form input elements
         const item = input.elements[0].value;
-        
         const style = "none";
         const priority = document.getElementById("Priority_Combobox").value;
         const date = input.elements[1].value;
+        // Push item data into array
         item_data.push([item, style, priority, date]);
+        // Shows items
         updatelabel();
+        // Empty input elements to allow user to enter a new item
         input.elements[0].value = "";
         document.getElementById("Priority_Combobox").value = "None";
     }
@@ -212,6 +213,8 @@ function successful_login(){
             item_data.push([test_data_store[i*4], test_data_store[(i*4) + 1], test_data_store[(i*4) + 2], test_data_store[(i*4) + 3]]);
         }
     }
+    // Show users saved items
+    updatelabel();
 }
 
 function edit_item(){
