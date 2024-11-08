@@ -7,7 +7,7 @@ const division = document.createElement("div");
 division.style.display = "none";
 // Variable to keep track of how many elements are used per item
 const number_of_elements = 6;
-if(__name__ = "__main__"){
+function init(){
     // reAssign enter button actions for better UX
     reassign_enter("frm1", additem);
     reassign_enter("login div", validate_login);
